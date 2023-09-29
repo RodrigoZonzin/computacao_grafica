@@ -206,6 +206,7 @@ void display(void){
 }
 
 int main(int argc, char **argv){
+  glutInitWindowSize(800,600);
   glutInit(&argc, argv);
   glutCreateWindow("single triangle");
   glutDisplayFunc(display);
