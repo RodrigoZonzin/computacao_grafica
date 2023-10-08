@@ -1,5 +1,6 @@
 #include <GL/glut.h>
 #include <math.h>
+#include <stdio.h>
 
 // Largura e altura da janela
 GLfloat windowWidth;
