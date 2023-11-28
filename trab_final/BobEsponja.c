@@ -9,9 +9,10 @@ int win_id;
 
 #define PI M_PI
 
+void desenhaQuadrado();
+
 //Aqui se capturam as teclas comuns (letras, números e ESC, por exemplo)
-void myKeyboard(unsigned char key, int x, int y)
-{
+void myKeyboard(unsigned char key, int x, int y){
   switch (key) {
     case 'R': 
     case 'r':// muda a cor corrente para vermelho
@@ -49,8 +50,7 @@ void myKeyboardSpecial(int key, int x, int y ) {
 }
 
 // Função callback chamada para gerenciar eventos do mouse
-void myMouse(int button, int state, int x, int y)
-{
+void myMouse(int button, int state, int x, int y){
   if (button == GLUT_LEFT_BUTTON)
     if (state == GLUT_DOWN) {
       float r, g, b;
@@ -63,12 +63,7 @@ void myMouse(int button, int state, int x, int y)
   glutPostRedisplay();
 }
 
-void draw_cylinder(GLfloat radius,
-                   GLfloat height,
-                   GLubyte R,
-                   GLubyte G,
-                   GLubyte B)
-{
+void draw_cylinder(GLfloat radius, GLfloat height, GLubyte R, GLubyte G, GLubyte B){
     GLfloat x              = 0.0;
     GLfloat y              = 0.0;
     GLfloat angle          = 0.0;
@@ -103,6 +98,32 @@ void draw_cylinder(GLfloat radius,
     glEnd();
 }
 
+void desenhaCirculo() {
+    glBegin(GL_POLYGON);
+        for (int i = 0; i < 30; i++) {
+            glVertex2f(cos(i), sin(i));
+        }
+    glEnd();
+}
+
+void drawSpongeBob(int x, int y, int z) {
+    glColor3f(1.0, 1.0, 0.0); // Yellow color
+
+    desenhaQuadrado();
+    // You'll need to draw other features of SpongeBob (eyes, mouth, etc.)
+    // using similar OpenGL commands (circles, rectangles, lines, etc.)
+    // using the above logic.
+
+    // Example: Draw SpongeBob's eyes
+    glColor3f(0.0, 0.0, 0.0); // Black color for eyes
+    glBegin(GL_POLYGON);
+    // Define vertices for a circle at position (x - 20, y + 20, z + 10) with radius 10
+
+    glEnd();
+
+    // Continue drawing other features of SpongeBob similarly...
+}
+
 void desenhaQuadrado() {
     glBegin(GL_QUADS);
         glVertex2f(-0.5, -0.5);
@@ -112,10 +133,10 @@ void desenhaQuadrado() {
     glEnd();
 }
 
-void init(void) 
-{
+void init(void){
   // Define a cor de fundo da janela de visualização como preto
-  glClearColor (0.0, 0.0, 0.0, 0.0);
+  //glClearColor (0.24, 0.73, 0.92, 0.0);
+  glClearColor(1.0, 1.0, 1.0, 0.0);
   // Define o modo de rastreio de cor utilizado para misturar a cor do material nos pontos da face (smoothing)
   glShadeModel (GL_SMOOTH);
   // Habilita a definição da cor do material a partir da cor corrente
@@ -142,84 +163,88 @@ void init(void)
   //glColor3f(0.5, 1.0, 0.5);
 }
 
-void display(void)
-{
-  // Limpa a janela de visualização com a cor de fundo especificada, e limpa também o depth buffer
-  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  
-  // Entra no modo de definição de matriz de visualização
-  glMatrixMode(GL_MODELVIEW);
-  // Carrega a matriz identidade
-  glLoadIdentity();
-  // Define a posição da câmera, para onde ela aponta e qual o vetor UP
-  gluLookAt(0.0f, 30.0f, 50.0f, 0.0f, 20.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-  
-  // Desenha um teapot de lado de 10 unidades  
-  //glutSolidTeapot(10.0);
+void DrawEllipsoid(unsigned int uiStacks, unsigned int uiSlices, float fA, float fB, float fC){
+	float tStep = (PI) / (float)uiSlices;
+	float sStep = (PI) / (float)uiStacks;
+	
+	//Essa linha desenha em modo wireframe, caso queiram ver os polígonos criados pela função
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
+	for(float t = -PI/2; t <= (PI/2)+.0001; t += tStep)
+	{
+		glBegin(GL_TRIANGLE_STRIP);
+		for(float s = -PI; s <= PI+.0001; s += sStep)
+		{
+			glVertex3f(fA * cos(t) * cos(s), fB * cos(t) * sin(s), fC * sin(t));
+			glVertex3f(fA * cos(t+tStep) * cos(s), fB * cos(t+tStep) * sin(s), fC * sin(t+tStep));
+		}
+		glEnd();
+	}
+} 
 
-  glRotatef(30, 0, 1, 0);
-  glTranslatef(0.0, 5.0,  0.0);
+void display(void){
+    // Limpa a janela de visualização com a cor de fundo especificada, e limpa também o depth buffer
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  //PORTA
-  glPushMatrix();
-    glTranslatef(-25, -15, 0);
-    glColor3f(1.0, 1.0, 0.8); 
-    glRotatef(-90, 0, 1, 0);
-    glScalef(10, 15, 0);
-    desenhaQuadrado();
-  glPopMatrix();
-  
-  //PRIMEIRO BLOCO
-  
-  glPushMatrix();
-    glColor3f(1.0, 1.0, 0.8); 
-    glutSolidCube(2);  
-  glPopMatrix();
+    // Entra no modo de definição de matriz de visualização
+    glMatrixMode(GL_MODELVIEW);
+    // Carrega a matriz identidade
+    glLoadIdentity();
+    // Define a posição da câmera, para onde ela aponta e qual o vetor UP
+    gluLookAt(0.0f, 30.0f, 50.0f, 0.0f, 20.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
-  //SEGUNDO BLOCO
-  glTranslatef(50,0,0); 
-  glPushMatrix();
-    glColor3f(1.0, 1.0, 0.8); 
-    glutSolidCube(50);
-  glPopMatrix();
-  
-  //CHAPEU DA CASA
-  glTranslatef(-50, 25, 0);
-  glPushMatrix();
-    glColor3ub(234-40,234-40,174-40);
-    glRotatef(-90.0, 1.0, 0.0, 0.0);
-    glutSolidCone(35.0,25.0, 30, 30);
-  glPopMatrix();
+    // Desenha um teapot de lado de 10 unidades  
+    //glutSolidTeapot(10.0);
+    
+    glRotatef(-30, 0, 1, 0);
+    //glTranslatef(0.0, 0.0,  0.0);
 
-  //TRONCO DA ARVORE
-  glTranslatef(-50,-50,-10);
-  glPushMatrix();
-    glRotatef(-90, 1, 0, 0);
-    draw_cylinder(2, 45, 140,120,83);
-  glPopMatrix();
+    
+    //DrawEllipsoid(120, 120, 0, 50, 30);
 
-  //COPA DA ARVORE
-  glTranslatef(0, 45, 0);
-  glColor3f(0, 1, 0);
-  glutSolidSphere(10, 30, 50);
-  glTranslatef(0, 10, 0);
-  glutSolidSphere(7, 30, 50);
-  
-  
+    //BOB ESPONJA 
+    glColor3f(1.0, 1.0, 0.0);
+    glPushMatrix(); 
+        glScalef(20, 25, 10);
+        glutSolidCube(1);
+    glPopMatrix();
+
+    glColor3f(1.0, 1.0, 1.0);
+    glPushMatrix();
+        glTranslatef(-5, 8.0, 8.0); 
+        glScalef(1.5, 1.5, 1.5);
+        desenhaCirculo();   
+    glPopMatrix();
+
+    glColor3f(1.0, 1.0, 1.0);
+    glPushMatrix();
+        glTranslatef(5, 8.0, 8.0); 
+        glScalef(1.5, 1.5, 1.5);
+        desenhaCirculo();   
+    glPopMatrix();
+
+    glColor3f(1.0, 1.0, 1.0);
+    glPushMatrix();
+        glTranslatef(-5, -4.0, 0.0); 
+        glRotatef(90, 1, 0, 0);
+        glScalef(1.5, 1.5, 1.5);
+        draw_cylinder(2, 4, 1.0, 1.0, 1.0);
+    glPopMatrix(); 
+
+    glColor3f(1.0, 1.0, 1.0);
+    glPushMatrix();
+        glTranslatef(+5, -4.0, 0.0); 
+        glRotatef(90, 1, 0, 0);
+        glScalef(1.5, 1.5, 1.5);
+        draw_cylinder(2, 4, 1.0, 1.0, 1.0);
+    glPopMatrix(); 
 
 
-
-  
-
-  
-
-  
-  // Executa os comandos OpenGL, e depois troca os buffers de vídeo
-  glFlush();
+    // Executa os comandos OpenGL, e depois troca os buffers de vídeo
+    glFlush();
 }
 
-void reshape (int w, int h)
-{
+void reshape (int w, int h){
   // Define o viewport como o tamanho da janela
   glViewport (0, 0, (GLsizei) w, (GLsizei) h);
   // Entra no modo de definição de matriz de projeção
@@ -258,11 +283,11 @@ int main(int argc, char** argv)
   // Estabelece a função "reshape" como a função callback de redimensionamento da janela de exibição.
   glutReshapeFunc(reshape);
   // Estabelece a função "keyboard" como a função callback de evento de teclado.
-  glutKeyboardFunc(myKeyboard);
+  //glutKeyboardFunc(myKeyboard);
   // Estabelece a função "keyboardSpecial" como a função callback de evento de teclado especial.
-  glutSpecialFunc(myKeyboardSpecial);
+  //glutSpecialFunc(myKeyboardSpecial);
   // Estabelece a função "mouse" como a função callback de evento de mouse.
-  glutMouseFunc(myMouse);
+  //glutMouseFunc(myMouse);
   // Entra no loop de eventos, não retorna
   glutMainLoop();
   return 0;
