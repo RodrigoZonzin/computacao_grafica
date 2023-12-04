@@ -11,58 +11,6 @@ int win_id;
 
 void desenhaQuadrado();
 
-//Aqui se capturam as teclas comuns (letras, números e ESC, por exemplo)
-void myKeyboard(unsigned char key, int x, int y){
-  switch (key) {
-    case 'R': 
-    case 'r':// muda a cor corrente para vermelho
-      glColor3f(1.0f, 0.0f, 0.0f);
-      break;
-    case 'G':
-    case 'g':// muda a cor corrente para verde
-      glColor3f(0.0f, 1.0f, 0.0f);
-      break;
-    case 'B':
-    case 'b':// muda a cor corrente para azul
-      glColor3f(0.0f, 0.0f, 1.0f);
-      break;
-    //case 27:
-    //  glutDestroyWindow(win_id);
-    //  exit(0);
-    //  break;
-  }
-  glutPostRedisplay();
-}
-
-//Aqui se capturam as teclas especiais (Alt, Control, Shift, F1, F2, etc.)
-void myKeyboardSpecial(int key, int x, int y ) {
-  switch ( key ) {
-    case GLUT_KEY_UP:                   // Quando a seta para cima é teclada...
-      glutFullScreen ( );               // Vá para o modo tela cheia...
-      break;
-    case GLUT_KEY_DOWN:                 // Quando a seta para baixo for teclada...
-      glutReshapeWindow ( 640, 480 );   // Vá para modo em janela de 640 por 480
-      break;
-    default:
-      printf("Você apertou a tecla especial código: %d\n", key);  // ...para ajudar você a debugar...       
-      break;
-  }
-}
-
-// Função callback chamada para gerenciar eventos do mouse
-void myMouse(int button, int state, int x, int y){
-  if (button == GLUT_LEFT_BUTTON)
-    if (state == GLUT_DOWN) {
-      float r, g, b;
-      r = (double)rand() / (double)RAND_MAX;
-      g = (double)rand() / (double)RAND_MAX;
-      b = (double)rand() / (double)RAND_MAX;
-      glColor3f(r,g,b);
-      printf("%.2f, %.2f, %.2f\n", r, g, b);
-    }
-  glutPostRedisplay();
-}
-
 void draw_cylinder(GLfloat radius, GLfloat height, GLubyte R, GLubyte G, GLubyte B){
     GLfloat x              = 0.0;
     GLfloat y              = 0.0;
@@ -106,24 +54,6 @@ void desenhaCirculo() {
     glEnd();
 }
 
-void drawSpongeBob(int x, int y, int z) {
-    glColor3f(1.0, 1.0, 0.0); // Yellow color
-
-    desenhaQuadrado();
-    // You'll need to draw other features of SpongeBob (eyes, mouth, etc.)
-    // using similar OpenGL commands (circles, rectangles, lines, etc.)
-    // using the above logic.
-
-    // Example: Draw SpongeBob's eyes
-    glColor3f(0.0, 0.0, 0.0); // Black color for eyes
-    glBegin(GL_POLYGON);
-    // Define vertices for a circle at position (x - 20, y + 20, z + 10) with radius 10
-
-    glEnd();
-
-    // Continue drawing other features of SpongeBob similarly...
-}
-
 void desenhaQuadrado() {
     glBegin(GL_QUADS);
         glVertex2f(-0.5, -0.5);
@@ -135,8 +65,8 @@ void desenhaQuadrado() {
 
 void init(void){
   // Define a cor de fundo da janela de visualização como preto
-  //glClearColor (0.24, 0.73, 0.92, 0.0);
-  glClearColor(1.0, 1.0, 1.0, 0.0);
+  //glClearColor (1.0, 1.0, 1.0, 0.5);
+  glClearColor(0.53, 0.81, 0.92, 0.0);
   // Define o modo de rastreio de cor utilizado para misturar a cor do material nos pontos da face (smoothing)
   glShadeModel (GL_SMOOTH);
   // Habilita a definição da cor do material a partir da cor corrente
@@ -146,7 +76,7 @@ void init(void){
   GLfloat light_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
   GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
   GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-  GLfloat light_position[] = { 10.0, 10.0, 10.0, 0.0 };
+  GLfloat light_position[] = { 400.0, 400.0, 400.0, 0.0 };
 
   // Passa os parâmetros definidos acima para a OpenGL
   glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
@@ -170,11 +100,9 @@ void DrawEllipsoid(unsigned int uiStacks, unsigned int uiSlices, float fA, float
 	//Essa linha desenha em modo wireframe, caso queiram ver os polígonos criados pela função
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
-	for(float t = -PI/2; t <= (PI/2)+.0001; t += tStep)
-	{
+	for(float t = -PI/2; t <= (PI/2)+.0001; t += tStep){
 		glBegin(GL_TRIANGLE_STRIP);
-		for(float s = -PI; s <= PI+.0001; s += sStep)
-		{
+		for(float s = -PI; s <= PI+.0001; s += sStep){
 			glVertex3f(fA * cos(t) * cos(s), fB * cos(t) * sin(s), fC * sin(t));
 			glVertex3f(fA * cos(t+tStep) * cos(s), fB * cos(t+tStep) * sin(s), fC * sin(t+tStep));
 		}
@@ -193,55 +121,242 @@ void display(void){
     // Define a posição da câmera, para onde ela aponta e qual o vetor UP
     gluLookAt(0.0f, 30.0f, 50.0f, 0.0f, 20.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
-    // Desenha um teapot de lado de 10 unidades  
-    //glutSolidTeapot(10.0);
     
-    glRotatef(-30, 0, 1, 0);
+    glRotatef(30, 0, 1, 0);
+    glPushMatrix();
+        glRotatef(-90, 1, 0, 0);
+        glTranslatef(0, -400, 0);
+        glScalef(2000,2000,200);
+        glColor3ub(233, 227, 206); 
+           
+        desenhaQuadrado(); 
+    glPopMatrix();
     //glTranslatef(0.0, 0.0,  0.0);
 
     
-    //DrawEllipsoid(120, 120, 0, 50, 30);
 
-    //BOB ESPONJA 
-    glColor3f(1.0, 1.0, 0.0);
+    /*BOB ESPONJA */
+    //Corpo
+    glTranslatef(0, 25, 0);
+
     glPushMatrix(); 
-        glScalef(20, 25, 10);
-        glutSolidCube(1);
+        glColor3f(1.0, 1.0, 0.0);
+        glScalef(1.0, 1.3, 0.5);
+        glutSolidCube(20);
+    glPopMatrix();
+    //Calca
+    glPushMatrix();
+        glColor3f(0.36, 0.25, 0.20);
+        glTranslatef(0, -15, 0); 
+        glScalef(1.0, 0.25, 0.5);
+        glutSolidCube(20);
     glPopMatrix();
 
-    glColor3f(1.0, 1.0, 1.0);
+    //Olho
     glPushMatrix();
+        glColor3f(1.0, 1.0, 1.0);
         glTranslatef(-5, 8.0, 8.0); 
         glScalef(1.5, 1.5, 1.5);
         desenhaCirculo();   
     glPopMatrix();
-
-    glColor3f(1.0, 1.0, 1.0);
+    
+    //Olho 1
     glPushMatrix();
+        glColor3f(1.0, 1.0, 1.0);
         glTranslatef(5, 8.0, 8.0); 
         glScalef(1.5, 1.5, 1.5);
         desenhaCirculo();   
     glPopMatrix();
 
-    glColor3f(1.0, 1.0, 1.0);
+
+    //Perna
     glPushMatrix();
-        glTranslatef(-5, -4.0, 0.0); 
-        glRotatef(90, 1, 0, 0);
-        glScalef(1.5, 1.5, 1.5);
-        draw_cylinder(2, 4, 1.0, 1.0, 1.0);
+        glColor3f(1.0, 1.0, 0.0);
+        glTranslatef(-5, -25.0, 0.0); 
+        glRotatef(-90, 1, 0, 0);
+        //glScalef(2, 2, 2);
+        draw_cylinder(2, 10, 1.0, 1.0, 1.0);
     glPopMatrix(); 
 
-    glColor3f(1.0, 1.0, 1.0);
+    //Perna
     glPushMatrix();
-        glTranslatef(+5, -4.0, 0.0); 
-        glRotatef(90, 1, 0, 0);
-        glScalef(1.5, 1.5, 1.5);
-        draw_cylinder(2, 4, 1.0, 1.0, 1.0);
+        glColor3f(1.0, 1.0, 0.0);
+        glTranslatef(+5, -25.0, 0.0); 
+        glRotatef(-90, 1, 0, 0);
+        //glScalef(1.5, 1.5, 1.5);
+        draw_cylinder(2, 10, 1.0, 1.0, 1.0);
     glPopMatrix(); 
+
+    //Braco
+    glPushMatrix();
+        glColor3f(1.0, 1.0, 0.0);
+        glTranslatef(-10, 0.0, 0.0); 
+        glRotatef(-90, 0, 1, 0);
+        //glScalef(1.5, 1.5, 1.5);
+        draw_cylinder(2, 10, 1.0, 1.0, 1.0);
+    glPopMatrix(); 
+
+    //Braco
+    glPushMatrix();
+        glColor3f(1.0, 1.0, 0.0);
+        glTranslatef(+20, 0.0, 0.0); 
+        glRotatef(-90, 0, 1, 0);
+        //glScalef(1.5, 1.5, 1.5);
+        draw_cylinder(2, 10, 1.0, 1.0, 1.0);
+    glPopMatrix(); 
+
+    //Casa
+    glTranslatef(-30, -5, -20); 
+    glPushMatrix();
+        glColor3ub(254, 255, 0);
+        glScalef(3, 3, 3);
+        glRotatef(-90, 0, 2, 0);
+        DrawEllipsoid(100, 100, 5, 10, 5);
+    glPopMatrix();
+
+    //folhas do abacaxi
+        glTranslatef(0, 30, 0);
+        glPushMatrix();
+            glTranslatef(0, 0, 0);
+            glColor3f(0.0, 1.0, 0.0);
+            glScalef(0.5, 1, 0.5);
+            DrawEllipsoid(100, 100, 5, 10, 5);
+        glPopMatrix();
+
+        
+        glPushMatrix();
+            glTranslatef(-4, 0, 0); 
+            glColor3f(0.0, 1.0, 0.0);
+            glRotatef(15, 0, -2 ,0 );
+            glScalef(0.5, 1, 0.5);
+
+            DrawEllipsoid(100, 100, 5, 10, 5);
+        glPopMatrix();
+
+        glPushMatrix();
+            glTranslatef(+4, 0, 0); 
+            glColor3f(0.0, 1.0, 0.0);
+            glRotatef(15, 0, -2 ,0 );
+            glScalef(0.5, 1, 0.5);
+
+            DrawEllipsoid(100, 100, 5, 10, 5);
+        glPopMatrix();
+
+        glPushMatrix();
+            glTranslatef(0, 0, +4); 
+            glColor3f(0.0, 1.0, 0.0);
+            glRotatef(15, 0, -2 ,0 );
+            glScalef(0.5, 1, 0.5);
+
+            DrawEllipsoid(100, 100, 5, 10, 5);
+        glPopMatrix();
+
+        glPushMatrix();
+            glTranslatef(-4, 0, +4); 
+            glColor3f(0.0, 1.0, 0.0);
+            glRotatef(15, 0, -2 ,0 );
+            glScalef(0.5, 1, 0.5);
+
+            DrawEllipsoid(100, 100, 5, 10, 5);
+        glPopMatrix();
+
+        glPushMatrix();
+            glTranslatef(+4, 0, -4); 
+            glColor3f(0.0, 1.0, 0.0);
+            glRotatef(15, 0, -2 ,0 );
+            glScalef(0.5, 1, 0.5);
+
+            DrawEllipsoid(100, 100, 5, 10, 5);
+        glPopMatrix();
+        
+        glPushMatrix();
+            glTranslatef(0, 0, 0); 
+            glColor3f(0.0, 1.0, 0.0);
+            glRotatef(0, 0, 0 ,0 );
+            glScalef(0.5, 1.5, 0.5);
+
+            DrawEllipsoid(100, 100, 5, 10, 5);
+        glPopMatrix();
+
+
+    //JANELA DE CIMA
+    glPopMatrix();
+        glTranslatef(-1, -30, 0);
+        glTranslatef(-5, 15, +15); 
+        //glColor3f(1.0, 0.650, 0.0);
+        glColor3f(0.0, 0.5, 1.0);
+        glScalef(5, 5, 5);
+        desenhaCirculo();
+
+        glTranslatef(1.5, -2.25, 0); 
+        desenhaCirculo();
+    glPushMatrix();
+
+    glTranslatef(10, 0, +15);
+    glPushMatrix();
+        glColor3ub(255, 203, 219);
+        glutSolidSphere(2.5, 50, 50);
+        glTranslatef(0, 1.5, 0);
+        glutSolidSphere(2.0, 50, 50);
+        glTranslatef(0, 2, 0);
+        glRotatef(-90, 0, 1, 0);
+        glScalef(0.1, 0.2, 0.1);
+        glColor3ub(255, 203, 219);
+        DrawEllipsoid(100, 100, 5, 10, 5);
+    glPopMatrix();
+    
+    glPushMatrix();
+        glRotatef(-90, 0, 1, 0);
+        //glScalef(0.5, 0.5, 0.5);
+        glColor3ub(255, 203, 219);
+        //DrawEllipsoid(200, 200, 255, 203, 219);
+        draw_cylinder(0.5, 5, 0, 0, 0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glRotatef(90, 0, 1, 0);
+        //glScalef(0.5, 0.5, 0.5);
+        glColor3ub(255, 203, 219);
+        draw_cylinder(0.5, 5, 0, 0, 0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glColor3ub(255, 203, 219);
+        glTranslatef(-2, -1, 1);
+        glRotatef(90, 1, -1, -1);
+        //glScalef(0.5, 0.5, 0.5);
+        draw_cylinder(0.5, 4, 0, 0, 0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(2, -1, 1);
+        glRotatef(90, 1, 1, 1);
+        //glScalef(0.5, 0.5, 0.5);
+        glColor3ub(255, 203, 219);
+        draw_cylinder(0.5, 4, 0, 0, 0);
+    glPopMatrix();
+
+    //TRONCO DA ARVORE
+    glTranslatef(-25, -1, -5);      
+    glPushMatrix();
+        glRotatef(-90, 1, 0, 0);
+        glScalef(0.2, 0.1, 0.1);
+        draw_cylinder(2, 45, 140,120,83);
+    glPopMatrix();
+
+  //COPA DA ARVORE
+    glTranslatef(0, 5, 0);
+    glScalef(0.15, 0.15, 0.15);
+    glColor3f(0, 1, 0);
+    glutSolidSphere(10, 30, 50);
+    glTranslatef(0, 10, 0);
+    glutSolidSphere(7, 30, 50);
 
 
     // Executa os comandos OpenGL, e depois troca os buffers de vídeo
+    //glutSwapBuffers();
     glFlush();
+    //glutSwapBuffers();
 }
 
 void reshape (int w, int h){
@@ -261,8 +376,7 @@ void reshape (int w, int h){
    
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv){
   // Inicializa a biblioteca GLUT e negocia uma seção com o gerenciador de janelas
   glutInit(&argc, argv);
   // Inicializa o display, indicando que usará:
@@ -271,23 +385,17 @@ int main(int argc, char** argv)
   // - padrão de cores RGB)
   glutInitDisplayMode (GLUT_SINGLE | GLUT_DEPTH | GLUT_RGB);
   // Especifica as dimensões da janela de exibição
-  glutInitWindowSize (1500, 1000); 
+  glutInitWindowSize (1280, 1000); 
   // Especifica a posição inicial da janela de exibição
   glutInitWindowPosition (100, 100);
   // Cria a janela de exibição
-  win_id = glutCreateWindow ("Casa do Senhor");
+  win_id = glutCreateWindow ("O maximo q meu TDAH permitiu");
   // Chama a função init
-  init ();
+  init();
   // Estabelece a função "display" como a função callback de exibição.
   glutDisplayFunc(display); 
   // Estabelece a função "reshape" como a função callback de redimensionamento da janela de exibição.
   glutReshapeFunc(reshape);
-  // Estabelece a função "keyboard" como a função callback de evento de teclado.
-  //glutKeyboardFunc(myKeyboard);
-  // Estabelece a função "keyboardSpecial" como a função callback de evento de teclado especial.
-  //glutSpecialFunc(myKeyboardSpecial);
-  // Estabelece a função "mouse" como a função callback de evento de mouse.
-  //glutMouseFunc(myMouse);
   // Entra no loop de eventos, não retorna
   glutMainLoop();
   return 0;

@@ -5,7 +5,7 @@ from scanf import scanf
 while True:
     ar = input("Vetor de cores: ")
 
-    values = scanf("%d, %d, %d", ar)
+    values = scanf("%f, %f, %f", ar)
     
     values = np.array(values)/255
 
